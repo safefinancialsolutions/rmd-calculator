@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RMD Calculator | Safe Financial Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Epilogue:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== BRAND COLORS: replace these two hex codes with your official colors ===== */
+  :root {
+    --brand-primary: #09532D;   /* PRIMARY brand color (headers, buttons) */
+    --brand-secondary: #BBA365; /* SECONDARY brand color (accents, highlights) */
+    --text-dark: #121317;
+    --text-body: #212121;
+    --border: #CCCCCC;
+    --bg: #F5F5F5;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, Helvetica, Arial, sans-serif; font-size: 17px; line-height: 1.55; color: var(--text-body); background: var(--bg); }
+  header { background: var(--brand-primary); color: #fff; padding: 18px 20px; border-bottom: 5px solid var(--brand-secondary); }
+  .header-inner { max-width: 860px; margin: 0 auto; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  /* INSERT LOGO HERE: change the src below to your logo file path or URL */
+  .logo { height: 56px; width: auto; max-width: 240px; }
+  header h1 { margin: 0; font-size: 1.6rem; line-height: 1.2; }
+  header p { margin: 2px 0 0; font-size: 1rem; opacity: .9; }
+  main { max-width: 860px; margin: 24px auto; padding: 0 16px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 22px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  h2 { color: var(--brand-primary); margin: 0 0 14px; font-size: 1.3rem; }
+  label { display: block; font-weight: 600; margin: 16px 0 6px; color: var(--text-dark); }
+  .hint { font-weight: 400; font-size: .9rem; color: #555; display: block; margin-top: 2px; }
+  input[type=text], input[type=number], input[type=date], select { width: 100%; font: inherit; font-size: 1.05rem; padding: 12px; border: 2px solid var(--border); border-radius: 8px; background: #fff; color: var(--text-dark); }
+  input:focus, select:focus, button:focus { outline: 3px solid var(--brand-secondary); border-color: var(--brand-primary); }
+  .check { display: flex; align-items: flex-start; gap: 10px; font-weight: 400; margin-top: 14px; }
+  .check input { width: 22px; height: 22px; margin-top: 3px; flex: none; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 620px) { .row { grid-template-columns: 1fr; } header h1 { font-size: 1.35rem; } }
+  .hidden { display: none; }
+  button { font: inherit; font-weight: 700; font-size: 1.1rem; background: var(--brand-primary); color: #fff; border: none; border-radius: 8px; padding: 14px 28px; margin-top: 22px; cursor: pointer; }
+  button:hover { filter: brightness(1.15); }
+  button.secondary { background: #fff; color: var(--brand-primary); border: 2px solid var(--brand-primary); margin-left: 10px; }
+  .error { background: #fdecea; border-left: 5px solid #b3261e; padding: 12px 14px; border-radius: 6px; margin-top: 16px; }
+  .result-big { font-size: 2.3rem; font-weight: 700; color: var(--brand-primary); margin: 4px 0 12px; }
+  table.res { width: 100%; border-collapse: collapse; margin: 8px 0; }
+  table.res td { padding: 10px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.res td:first-child { font-weight: 600; width: 42%; }
+  .note { background: #faf6ea; border-left: 5px solid var(--brand-secondary); padding: 12px 14px; border-radius: 6px; margin-top: 14px; }
+  .note p { margin: 0 0 8px; } .note p:last-child { margin: 0; }
+  .disclaimer { font-size: .95rem; color: #444; border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px; }
+  footer { max-width: 860px; margin: 0 auto 40px; padding: 0 16px; }
+  @media print { header { -webkit-print-color-adjust: exact; print-color-adjust: exact; } button { display: none; } body { background: #fff; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <!-- INSERT LOGO HERE -->
+    <img class="logo" src="YOUR-LOGO-FILE.png" alt="Safe Financial Solutions logo" onerror="this.style.display='none'">
+    <div>
+      <h1>Required Minimum Distribution (RMD) Calculator</h1>
+      <p>Safe Financial Solutions</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <h2>Your Information</h2>
+    <form id="f" autocomplete="off" novalidate>
+      <label for="acct">Account type</label>
+      <select id="acct">
+        <option value="trad">Traditional IRA</option>
+        <option value="roth">Roth IRA</option>
+        <option value="sep">SEP-IRA</option>
+        <option value="simple">SIMPLE IRA</option>
+        <option value="401k">401(k)</option>
+        <option value="403b">403(b)</option>
+        <option value="inhSpouse">Inherited IRA: spouse beneficiary</option>
+        <option value="inhNon">Inherited IRA: non-spouse beneficiary</option>
+      </select>
+
+      <label for="bal">Account balance as of December 31 of last year
+        <span class="hint">Use the prior year-end value shown on the year-end statement.</span></label>
+      <input type="text" id="bal" inputmode="decimal" placeholder="$0.00">
+
+      <div class="row">
+        <div>
+          <label for="dob"><span id="dobLabel">Your date of birth</span></label>
+          <input type="date" id="dob">
+        </div>
+        <div>
+          <label for="year">Distribution year
+            <span class="hint">The calendar year the RMD is for.</span></label>
+          <input type="number" id="year" min="2022" max="2100">
+        </div>
+      </div>
+
+      <div id="workBox" class="hidden">
+        <label class="check"><input type="checkbox" id="working"> <span>I am still working for the employer that sponsors this plan</span></label>
+        <label class="check hidden" id="fiveWrap"><input type="checkbox" id="five"> <span>I own 5% or more of the company</span></label>
+      </div>
+
+      <div id="inhBox" class="hidden">
+        <h2 style="margin-top:26px">Inherited Account Details</h2>
+        <div class="row">
+          <div>
+            <label for="odob">Original owner's date of birth</label>
+            <input type="date" id="odob">
+          </div>
+          <div>
+            <label for="odod">Original owner's date of death</label>
+            <input type="date" id="odod">
+          </div>
+        </div>
+        <div id="benCatWrap">
+          <label for="bencat">Beneficiary category</label>
+          <select id="bencat">
+            <option value="adb">Adult child, grandchild, sibling-in-law, friend, or other (10-year rule)</option>
+            <option value="edb">Eligible designated beneficiary: minor child of owner, disabled, chronically ill, or not more than 10 years younger than owner</option>
+          </select>
+        </div>
+        <label class="check"><input type="checkbox" id="inhRoth"> <span>The inherited account is a Roth IRA</span></label>
+      </div>
+
+      <div id="err" class="error hidden" role="alert"></div>
+      <button type="submit">Calculate RMD</button>
+      <button type="button" class="secondary" id="reset">Start Over</button>
+    </form>
+  </div>
+
+  <div id="out" class="card hidden" aria-live="polite"></div>
+</main>
+
+<footer>
+  <p class="disclaimer">This calculator is provided by Safe Financial Solutions for educational and planning purposes only. Results are estimates and do not constitute tax or legal advice. Please consult your tax advisor for guidance specific to your situation.</p>
+</footer>
+
+<script>
+/* ===== IRS TABLES (effective 2022; source: IRS Publication 590-B, Appendix B) ===== */
+// Table III: Uniform Lifetime Table, ages 72 to 120+
+var UNIFORM = {72:27.4,73:26.5,74:25.5,75:24.6,76:23.7,77:22.9,78:22.0,79:21.1,80:20.2,81:19.4,82:18.5,83:17.7,84:16.8,85:16.0,86:15.2,87:14.4,88:13.7,89:12.9,90:12.2,91:11.5,92:10.8,93:10.1,94:9.5,95:8.9,96:8.4,97:7.8,98:7.3,99:6.8,100:6.4,101:6.0,102:5.6,103:5.2,104:4.9,105:4.6,106:4.3,107:4.1,108:3.9,109:3.7,110:3.5,111:3.4,112:3.3,113:3.1,114:3.0,115:2.9,116:2.8,117:2.7,118:2.5,119:2.3,120:2.0};
+// Table I: Single Life Expectancy Table, ages 0 to 120+
+var SINGLE = {0:84.6,1:83.7,2:82.8,3:81.8,4:80.8,5:79.8,6:78.8,7:77.9,8:76.9,9:75.9,10:74.9,11:73.9,12:72.9,13:71.9,14:70.9,15:69.9,16:69.0,17:68.0,18:67.0,19:66.0,20:65.0,21:64.1,22:63.1,23:62.1,24:61.1,25:60.2,26:59.2,27:58.2,28:57.3,29:56.3,30:55.3,31:54.4,32:53.4,33:52.5,34:51.5,35:50.5,36:49.6,37:48.6,38:47.7,39:46.7,40:45.7,41:44.8,42:43.8,43:42.9,44:41.9,45:41.0,46:40.0,47:39.0,48:38.1,49:37.1,50:36.2,51:35.3,52:34.3,53:33.4,54:32.5,55:31.6,56:30.6,57:29.8,58:28.9,59:28.0,60:27.1,61:26.2,62:25.4,63:24.5,64:23.7,65:22.9,66:22.0,67:21.2,68:20.4,69:19.6,70:18.8,71:18.0,72:17.2,73:16.4,74:15.6,75:14.8,76:14.1,77:13.3,78:12.6,79:11.9,80:11.2,81:10.5,82:9.9,83:9.3,84:8.7,85:8.1,86:7.6,87:7.1,88:6.6,89:6.1,90:5.7,91:5.3,92:4.9,93:4.6,94:4.3,95:4.0,96:3.7,97:3.4,98:3.2,99:3.0,100:2.8,101:2.6,102:2.5,103:2.3,104:2.2,105:2.1,106:2.1,107:2.1,108:2.0,109:2.0,110:2.0,111:2.0,112:2.0,113:1.9,114:1.9,115:1.8,116:1.8,117:1.6,118:1.4,119:1.1,120:1.0};
+
+function uniformFactor(age){ return UNIFORM[Math.min(age,120)]; }
+function singleFactor(age){ return SINGLE[Math.min(age,120)]; }
+
+/* RMD starting age by birth year (SECURE 2.0): 1951-1959 = 73; 1960+ = 75; 1950 and earlier = already required (72 or younger-age rules). */
+function rmdStartAge(birthYear){
+  if (birthYear >= 1960) return 75;
+  if (birthYear >= 1951) return 73;
+  return 72; // born 1950 or earlier: already in RMD years
+}
+function parseDate(s){ // "YYYY-MM-DD" -> {y,m,d}
+  var p = s.split('-'); return {y:+p[0], m:+p[1], d:+p[2]};
+}
+function money(n){ return n.toLocaleString('en-US',{style:'currency',currency:'USD'}); }
+function round2(n){ return Math.round((n + 1e-9) * 100) / 100; }
+
+/* Pure calculation function (also used for testing).
+   in: {acct, balance, dob:'YYYY-MM-DD', year, working, five, odob, odod, bencat, inhRoth} */
+function computeRMD(i){
+  var r = {kind:'', notes:[]};
+  var by = parseDate(i.dob).y;
+  var ageEnd = i.year - by;
+
+  if (i.acct === 'roth') { r.kind = 'roth'; return r; }
+
+  /* ---------- Inherited accounts ---------- */
+  if (i.acct === 'inhSpouse' || i.acct === 'inhNon') {
+    var od = parseDate(i.odod), ob = parseDate(i.odob);
+    var deathYear = od.y;
+    var ownerStart = rmdStartAge(ob.y);
+    // Required beginning date = April 1 of the year after owner reaches start age
+    var rbdYear = ob.y + ownerStart + 1;
+    var diedAfterRBD = (deathYear > rbdYear) || (deathYear === rbdYear && (od.m > 4 || (od.m === 4)));
+    // (died on or after April 1 of RBD year counts as after RBD)
+    if (i.inhRoth) diedAfterRBD = false; // Roth owners are treated as dying before RBD
+    r.deathYear = deathYear; r.diedAfterRBD = diedAfterRBD; r.table = 'IRS Single Life Expectancy Table (Table I)';
+
+    if (i.year <= deathYear) { r.kind = 'inhEarly'; return r; }
+
+    if (i.acct === 'inhSpouse') {
+      var ownerRmdYear = ob.y + ownerStart; // year owner would have reached RMD age
+      var startYear = diedAfterRBD ? deathYear + 1 : Math.max(deathYear + 1, ownerRmdYear);
+      if (i.year < startYear) { r.kind = 'inhSpouseWait'; r.startYear = startYear; return r; }
+      r.kind = 'rmd'; r.age = ageEnd; r.factor = singleFactor(ageEnd);
+      r.rmd = round2(i.balance / r.factor);
+      r.factorNote = 'Spouse beneficiary age at end of ' + i.year + ' (' + ageEnd + '), recalculated each year.';
+      r.notes.push('Spouse beneficiaries may instead treat the account as their own, which uses the Uniform Lifetime Table. Spouses may also elect the 10-year rule. These alternatives can change the result.');
+      return r;
+    }
+
+    // Non-spouse
+    var firstYear = deathYear + 1;
+    var benAgeFirst = (firstYear) - by;   // age at Dec 31 of year after death
+    var yrsIn = i.year - firstYear;       // 0 in first year
+    if (i.bencat === 'edb') {
+      r.kind = 'rmd'; r.factor = round2(singleFactor(benAgeFirst) - yrsIn);
+      if (r.factor < 1) r.factor = 1.0;
+      r.age = benAgeFirst; r.factorNote = 'Table factor for age ' + benAgeFirst + ' (age at end of ' + firstYear + '), reduced by 1 for each year after ' + firstYear + '.';
+      r.rmd = round2(i.balance / r.factor);
+      r.notes.push('Eligible designated beneficiaries use life expectancy payouts. A minor child of the owner switches to the 10-year rule at age 21.');
+      return r;
+    }
+    // Adult/other: 10-year rule
+    r.tenYearEnd = deathYear + 10;
+    if (i.year > r.tenYearEnd) { r.kind = 'tenYearOver'; return r; }
+    if (!diedAfterRBD) {
+      r.kind = 'tenYearNoAnnual'; return r;
+    }
+    if (i.year === r.tenYearEnd) {
+      r.kind = 'tenYearFinal'; r.rmd = round2(i.balance); r.factor = 1.0; r.age = benAgeFirst;
+      r.factorNote = 'Final year of the 10-year rule: the entire remaining balance must be withdrawn by December 31, ' + r.tenYearEnd + '.';
+      return r;
+    }
+    r.kind = 'rmd'; r.factor = round2(singleFactor(benAgeFirst) - yrsIn); r.age = benAgeFirst;
+    r.factorNote = 'Table factor for age ' + benAgeFirst + ' (age at end of ' + firstYear + '), reduced by 1 for each year after ' + firstYear + '.';
+    r.rmd = round2(i.balance / r.factor);
+    r.tenYearNote = true;
+    return r;
+  }
+
+  /* ---------- Owner accounts (Uniform Lifetime Table) ---------- */
+  var startAge = rmdStartAge(by);
+  var firstRmdYear = by + startAge;
+  r.startAge = startAge; r.firstRmdYear = firstRmdYear; r.age = ageEnd; r.table = 'IRS Uniform Lifetime Table (Table III, effective 2022)';
+  r.firstDue = 'April 1, ' + (firstRmdYear + 1) + ' (or December 31, ' + firstRmdYear + ' if you do not delay)';
+
+  if (ageEnd < startAge) { r.kind = 'notYet'; return r; }
+
+  if ((i.acct === '401k' || i.acct === '403b') && i.working && !i.five) { r.kind = 'working'; return r; }
+
+  r.kind = 'rmd'; r.factor = uniformFactor(ageEnd); r.rmd = round2(i.balance / r.factor);
+  r.isFirstYear = (ageEnd === startAge);
+  r.notes.push('If your sole beneficiary is a spouse more than 10 years younger, the IRS Joint Life and Last Survivor Expectancy Table applies instead. It produces a smaller RMD and is not included in this calculator.');
+  if (i.acct === '403b') r.notes.push('403(b) balances accumulated before 1987 may be eligible for special treatment. Check with your plan administrator.');
+  if (i.acct === '401k' || i.acct === '403b') r.notes.push('RMDs must be calculated and taken separately for each employer plan.');
+  else r.notes.push('If you own several IRAs (Traditional, SEP, SIMPLE), calculate each separately; the total may be withdrawn from any one or more of them.');
+  return r;
+}
+
+/* ===== PAGE LOGIC (browser only) ===== */
+if (typeof document !== 'undefined') {
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  $('year').value = new Date().getFullYear();
+
+  function syncForm(){
+    var a = $('acct').value;
+    var inh = (a === 'inhSpouse' || a === 'inhNon');
+    $('inhBox').classList.toggle('hidden', !inh);
+    $('benCatWrap').classList.toggle('hidden', a !== 'inhNon');
+    $('workBox').classList.toggle('hidden', !(a === '401k' || a === '403b'));
+    $('dobLabel').textContent = inh ? "Beneficiary's date of birth (your date of birth)" : 'Your date of birth';
+    $('fiveWrap').classList.toggle('hidden', !$('working').checked);
+  }
+  $('acct').addEventListener('change', syncForm);
+  $('working').addEventListener('change', syncForm);
+
+  $('bal').addEventListener('blur', function(){
+    var v = parseFloat(this.value.replace(/[^0-9.]/g,''));
+    if (!isNaN(v)) this.value = money(v);
+  });
+  $('bal').addEventListener('focus', function(){ this.value = this.value.replace(/[^0-9.]/g,''); });
+
+  $('reset').addEventListener('click', function(){
+    $('f').reset(); $('year').value = new Date().getFullYear();
+    $('out').classList.add('hidden'); $('err').classList.add('hidden'); syncForm();
+  });
+
+  function show(html){ $('out').innerHTML = html; $('out').classList.remove('hidden'); $('out').scrollIntoView({behavior:'smooth'}); }
+  function row(a,b){ return '<tr><td>'+a+'</td><td>'+b+'</td></tr>'; }
+  function notes(arr){ return arr && arr.length ? '<div class="note">'+arr.map(function(n){return '<p>'+n+'</p>';}).join('')+'</div>' : ''; }
+
+  $('f').addEventListener('submit', function(e){
+    e.preventDefault();
+    var err = $('err'); err.classList.add('hidden');
+    var a = $('acct').value;
+    var inh = (a === 'inhSpouse' || a === 'inhNon');
+    var bal = parseFloat($('bal').value.replace(/[^0-9.]/g,''));
+    var year = parseInt($('year').value,10);
+    var msgs = [];
+    if (a !== 'roth' && (isNaN(bal) || bal < 0)) msgs.push('Please enter the account balance as of December 31 of last year.');
+    if (!$('dob').value) msgs.push('Please enter a date of birth.');
+    if (isNaN(year) || year < 2022) msgs.push('Please enter a distribution year of 2022 or later.');
+    if (inh && (!$('odob').value || !$('odod').value)) msgs.push("Please enter the original owner's date of birth and date of death.");
+    if (msgs.length){ err.innerHTML = msgs.join('<br>'); err.classList.remove('hidden'); return; }
+    if (a === 'roth') bal = 0;
+
+    var r = computeRMD({acct:a, balance:bal, dob:$('dob').value, year:year, working:$('working').checked, five:$('five').checked,
+      odob:$('odob').value, odod:$('odod').value, bencat:$('bencat').value, inhRoth:$('inhRoth').checked});
+    var h = '<h2>Your Results</h2>';
+
+    switch(r.kind){
+    case 'roth':
+      h += '<div class="note"><p><strong>Roth IRAs are not subject to RMDs during the owner\'s lifetime.</strong> Unlike Traditional IRAs, you are never required to withdraw from your own Roth IRA, and it can continue to grow tax-free for as long as you live.</p><p><strong>Inherited Roth IRAs are different.</strong> Beneficiaries generally must follow post-death distribution rules: most non-spouse beneficiaries must empty the account by December 31 of the 10th year after the owner\'s death (no annual withdrawals are required during those years), while eligible designated beneficiaries may stretch withdrawals over their life expectancy. A spouse may treat an inherited Roth IRA as their own and avoid RMDs entirely. Select an inherited IRA above and check "The inherited account is a Roth IRA" to see how this applies.</p><p>Note: Since 2024, Roth accounts inside 401(k) and 403(b) plans also have no lifetime RMDs.</p></div>';
+      break;
+    case 'notYet':
+      h += '<div class="note"><p><strong>You are not yet required to take RMDs.</strong> Based on your birth year, your RMDs begin in the year you reach age '+r.startAge+'.</p></div><table class="res">'+
+        row('Age at end of '+year, r.age)+row('First RMD year', r.firstRmdYear)+row('First RMD due date', r.firstDue)+'</table>'+
+        '<div class="note"><p>Your first RMD can be delayed until April 1 of the following year, but then you must take two RMDs in that year (the delayed first one and the second one by December 31), which can push you into a higher tax bracket.</p></div>';
+      break;
+    case 'working':
+      h += '<div class="note"><p><strong>No RMD is required from this plan right now.</strong> If you are still working for the employer that sponsors this 401(k) or 403(b) and you do not own 5% or more of the company, you can generally delay RMDs from that plan until April 1 after you retire. This does not apply to IRAs or to plans from former employers.</p></div>';
+      break;
+    case 'inhEarly':
+      h += '<div class="note"><p>The distribution year entered is the year of death or earlier. Beneficiary distributions begin the year after the owner\'s death. If the owner had not yet taken their own RMD for the year of death, the beneficiary must take it. Please consult your tax advisor.</p></div>'; break;
+    case 'inhSpouseWait':
+      h += '<div class="note"><p><strong>No RMD is required yet.</strong> Because the owner died before their required beginning date, a spouse beneficiary can wait until the year the owner would have reached RMD age. Distributions begin in <strong>'+r.startYear+'</strong>.</p></div>'; break;
+    case 'tenYearNoAnnual':
+      h += '<div class="note"><p><strong>No annual RMD is required for '+year+'.</strong> The owner died before their required beginning date (or the account is a Roth IRA), so under the 10-year rule you may withdraw on any schedule, but the entire account must be emptied by <strong>December 31, '+r.tenYearEnd+'</strong>.</p></div>'; break;
+    case 'tenYearOver':
+      h += '<div class="note"><p>The 10-year period ended December 31, '+r.tenYearEnd+'. The account should be fully distributed. Please consult your tax advisor if a balance remains.</p></div>'; break;
+    case 'tenYearFinal':
+    case 'rmd':
+      h += '<div class="result-big">'+money(r.rmd)+'</div><table class="res">'+
+        row('Calculated RMD for '+year, money(r.rmd))+
+        row('Life expectancy factor used', r.factor.toFixed(1))+
+        row('IRS table applied', r.table)+
+        row('Balance used (Dec. 31, '+(year-1)+')', money(bal))+
+        row('Age used', r.age + (r.factorNote && r.kind!=='rmd' ? '' : ''));
+      if (r.firstRmdYear) {
+        h += row('First RMD year', r.firstRmdYear)+row('First RMD due date', r.firstDue)+row('Later RMDs due', 'December 31 each year');
+      } else {
+        h += row('How the factor is set', r.factorNote||'');
+        h += row('Due date', 'December 31, '+year);
+      }
+      h += '</table>';
+      if (r.isFirstYear) h += '<div class="note"><p>This is your first RMD year. You may delay this first RMD until April 1, '+(year+1)+', but you would then owe two RMDs in '+(year+1)+'.</p></div>';
+      if (r.tenYearNote) h += '<div class="note"><p><strong>10-year rule:</strong> You must take annual RMDs in years 1 through 9 AND empty the entire account by December 31, '+r.tenYearEnd+'.</p></div>';
+      if (r.kind==='tenYearFinal') h += '<div class="note"><p>'+r.factorNote+'</p></div>';
+      h += notes(r.notes);
+      break;
+    }
+    show(h);
+  });
+  syncForm();
+})();
+}
+if (typeof module !== 'undefined') module.exports = {computeRMD:computeRMD};
+</script>
+</body>
+</html>
