@@ -18,11 +18,12 @@
   * { box-sizing: border-box; }
   body { margin: 0; font-family: Inter, Helvetica, Arial, sans-serif; font-size: 17px; line-height: 1.55; color: var(--text-body); background: var(--bg); }
   header { background: var(--brand-primary); color: #fff; padding: 18px 20px; border-bottom: 5px solid var(--brand-secondary); }
-  .header-inner { max-width: 860px; margin: 0 auto; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
-  /* INSERT LOGO HERE: change the src below to your logo file path or URL */
-  .logo { height: 56px; width: auto; max-width: 240px; }
+  .header-inner { max-width: 860px; margin: 0 auto; text-align: center; }
   header h1 { margin: 0; font-size: 1.6rem; line-height: 1.2; }
   header p { margin: 2px 0 0; font-size: 1rem; opacity: .9; }
+  /* LOGO: sits centered above the "Your Information" box */
+  .logo-wrap { text-align: center; margin: 0 0 22px; }
+  .logo { width: 260px; max-width: 80%; height: auto; }
   main { max-width: 860px; margin: 24px auto; padding: 0 16px; }
   .card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 22px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
   h2 { color: var(--brand-primary); margin: 0 0 14px; font-size: 1.3rem; }
@@ -53,16 +54,16 @@
 <body>
 <header>
   <div class="header-inner">
-    <!-- INSERT LOGO HERE -->
-    <img class="logo" src="YOUR-LOGO-FILE.png" alt="Safe Financial Solutions logo" onerror="this.style.display='none'">
-    <div>
-      <h1>Required Minimum Distribution (RMD) Calculator</h1>
-      <p>Safe Financial Solutions</p>
-    </div>
+    <h1>Required Minimum Distribution (RMD) Calculator</h1>
+    <p>Safe Financial Solutions</p>
   </div>
 </header>
 
 <main>
+  <div class="logo-wrap">
+    <!-- INSERT LOGO HERE: change the src below to your logo file name (for example logo.png) -->
+    <img class="logo" src="logo.png" alt="Safe Financial Solutions logo" onerror="this.style.display='none'">
+  </div>
   <div class="card">
     <h2>Your Information</h2>
     <form id="f" autocomplete="off" novalidate>
@@ -320,7 +321,11 @@ if (typeof document !== 'undefined') {
         row('Balance used (Dec. 31, '+(year-1)+')', money(bal))+
         row('Age used', r.age + (r.factorNote && r.kind!=='rmd' ? '' : ''));
       if (r.firstRmdYear) {
-        h += row('First RMD year', r.firstRmdYear)+row('First RMD due date', r.firstDue)+row('Later RMDs due', 'December 31 each year');
+        if (r.firstRmdYear < year) {
+          h += row('RMDs began in', r.firstRmdYear)+row('Due date for '+year+' RMD', 'December 31, '+year);
+        } else {
+          h += row('First RMD year', r.firstRmdYear)+row('First RMD due date', r.firstDue)+row('Later RMDs due', 'December 31 each year');
+        }
       } else {
         h += row('How the factor is set', r.factorNote||'');
         h += row('Due date', 'December 31, '+year);
